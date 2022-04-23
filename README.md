@@ -4,4 +4,4 @@ Server for handling rooms and game flow for the Saki Cards extension for Autotab
 
 Create .env: 
 
-API_PORT = <port>
+API_PORT = \<port>
