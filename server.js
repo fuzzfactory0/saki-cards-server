@@ -26,7 +26,7 @@ setInterval(() => {
         session.players.splice(pindex, 1);
       } 
     });
-    if (session.players.length == 0 || session.players.some(p => p.nickname == session.owner)) {
+    if (session.players.length == 0 || !session.players.some(p => p.nickname == session.owner)) {
       SESSIONS.splice(sindex, 1);
     }
   })
