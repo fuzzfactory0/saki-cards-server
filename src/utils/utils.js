@@ -11,11 +11,11 @@ function hideCards(session, playerid) {
   let playerSession = JSON.parse(JSON.stringify(session));
   playerSession.players.forEach(p => {
     if (p.nickname != playerid) {
-      p.hand = p.hand.map(() => {return {name: 'cardback', url: ''}});
+      p.hand = p.hand.map(() => {return {name: 'cardback'}});
     }
     p.lastSeen = 0;
   });
-  playerSession.deck = playerSession.deck.map(() => {return {name: 'cardback', url: ''}});
+  playerSession.deck = playerSession.deck.map(() => {return {name: 'cardback'}});
   playerSession.you = playerid;
   return playerSession;
 }
