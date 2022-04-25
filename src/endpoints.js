@@ -12,9 +12,10 @@ module.exports = (app, SESSIONS) => {
     try {
       let session = SESSIONS.find(s => s.id == req.query.sessionid);
       if (session) {
-        if (session.players.find(p => p.nickname == req.query.playerid).hand.length < 9) {
+        let player = session.players.find(p => p.nickname == req.query.playerid);
+        if (player.hand.length < 8 || player.hand.length == 8 && player.playedCard == null) {
           let card = session.deck.shift();
-          session.players.find(p => p.nickname == req.query.playerid).hand.push(card);
+          player.hand.push(card);
         }
         res.send({ ...hideCards(session, req.query.playerid) });
       } else {
@@ -143,7 +144,7 @@ module.exports = (app, SESSIONS) => {
         let player = session.players.find(p => p.nickname == req.query.playerid);
         if (player.nickname == session.owner) {
           session.open = true;
-          session.reveal = false;
+          session.revealed = false;
           session.players.forEach(p => {
             if (p.playedCard != null) {
               p.hand.push(p.playedCard);
@@ -160,7 +161,25 @@ module.exports = (app, SESSIONS) => {
     }
   });
 
-  app.get('/sessions', (req, res) => {
-    res.send(SESSIONS);
-  }); 
+  app.post('/arrange', (req, res) => {
+    try {
+      let session = SESSIONS.find(s => s.id == req.query.sessionid);
+      if (session) {
+        let player = session.players.find(p => p.nickname == req.query.playerid);
+        if (player.nickname == session.owner) {
+          let seat = parseInt(req.query.seat);
+          let target = session.players.find(p => p.nickname == req.query.target);
+          let displaced = session.players.find(p => p.seat == seat);
+          
+          if (displaced) displaced.seat = target.seat;
+          target.seat = seat;
+        }
+        res.send({ ...hideCards(session, req.query.playerid) });
+      } else {
+        res.sendStatus(404);
+      }
+    } catch(e) {
+      console.log(e);
+    }
+  });
 }
