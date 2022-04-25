@@ -75,7 +75,7 @@ module.exports = [
     name: "Kunihiro Hajime",
   },
   {
-    name: "Shirouzu Mairu+Tsuruta Himeko",
+    name: "Shirouzu Mairu",
   },
   {
     name: "Mase Yuuko",

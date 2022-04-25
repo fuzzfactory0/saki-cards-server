@@ -3,6 +3,8 @@ const Player = require('./class/Player');
 const { hideCards } = require('./utils/utils');
 const { shuffle } = require('./utils/utils');
 
+const EXT_VERSION = '2';
+
 module.exports = (app, SESSIONS) => {
   app.get('/', (req, res) => {
     res.send('Hello World!');
@@ -28,18 +30,22 @@ module.exports = (app, SESSIONS) => {
   });
 
   app.post('/session', (req, res) => {
-    try {
-      const b = req.body;
-      let id; 
-      do { 
-        id = Math.floor(Math.random() * 10000);
-      } while (SESSIONS.some(s => s.id == id) || id < 1000);
-      const session = new Session(id, b.owner, b.sanma, b.mode, b.length, b.forcedRotation, b.tenpaiRedraw);
-      session.players.push(new Player(b.owner, 1));
-      SESSIONS.push(session);
-      res.send(session);
-    } catch(e) {
-      console.log(e);
+    if (req.query.version != EXT_VERSION) {
+      res.send({alert: 'VERSION_MISMATCH'});
+    } else {
+      try {
+        const b = req.body;
+        let id; 
+        do { 
+          id = Math.floor(Math.random() * 10000);
+        } while (SESSIONS.some(s => s.id == id) || id < 1000);
+        const session = new Session(id, b.owner, b.sanma, b.mode, b.length, b.forcedRotation, b.tenpaiRedraw);
+        session.players.push(new Player(b.owner, 1));
+        SESSIONS.push(session);
+        res.send(session);
+      } catch(e) {
+        console.log(e);
+      }
     }
   });
 
@@ -61,23 +67,27 @@ module.exports = (app, SESSIONS) => {
   });
 
   app.post('/join', (req, res) => {
-    try {
-      console.log('join request ', req.url)
-      // parse session and player from url
-      const sessionid = req.query.sessionid;
-      const playerid = req.query.playerid;
+    if (req.query.version != EXT_VERSION) {
+      res.send({alert: 'VERSION_MISMATCH'});
+    } else {
+      try {
+        console.log('join request ', req.url)
+        // parse session and player from url
+        const sessionid = req.query.sessionid;
+        const playerid = req.query.playerid;
+        
+        // find session
+        let sess = SESSIONS.find(s => s.id == sessionid);
       
-      // find session
-      let sess = SESSIONS.find(s => s.id == sessionid);
-    
-      // create player if there's space in the room
-      let maxPlayers = sess.sanma == 'true' ? 3 : 4;
-      if (sess.players.length < maxPlayers && !sess.players.some(p => p.nickname == playerid)) {
-        sess.players.push(new Player(playerid, sess.players.length + 1));
-        res.send(sess);
+        // create player if there's space in the room
+        let maxPlayers = sess.sanma == 'true' ? 3 : 4;
+        if (sess.players.length < maxPlayers && !sess.players.some(p => p.nickname == playerid)) {
+          sess.players.push(new Player(playerid, sess.players.length + 1));
+          res.send(sess);
+        }
+      } catch(e) {
+        console.log(e);
       }
-    } catch(e) {
-      console.log(e);
     }
   });
 
@@ -94,6 +104,25 @@ module.exports = (app, SESSIONS) => {
         player.playedCard = card;
         res.send({ ...hideCards(session, req.query.playerid) });
       } else if (!session){
+        res.sendStatus(404);
+      }
+    } catch(e) {
+      console.log(e);
+    }
+  });
+
+  app.post('/flip', (req, res) => {
+    try {
+      let session = SESSIONS.find(s => s.id == req.query.sessionid);
+      if (session) {
+        if (session.revealed) {
+          let player = session.players.find(p => p.nickname == req.query.playerid);
+          if (player.playedCard != null) {
+            player.flippedOver = !player.flippedOver;
+          }
+        }
+        res.send({ ...hideCards(session, req.query.playerid) });
+      } else {
         res.sendStatus(404);
       }
     } catch(e) {
@@ -124,7 +153,12 @@ module.exports = (app, SESSIONS) => {
       let session = SESSIONS.find(s => s.id == req.query.sessionid);
       if (session) {
         let player = session.players.find(p => p.nickname == req.query.playerid);
-        if (player.nickname == session.owner && session.open) {
+        let cardsPlayed = 0;
+        let maxCards = session.sanma == 'true' ? 3 : 4;
+        session.players.forEach(p => {
+          if (p.playedCard != null) cardsPlayed++;
+        });
+        if (player.nickname == session.owner && session.open && cardsPlayed == maxCards) {
           session.revealed = true;
           session.open = false;
         }
@@ -149,6 +183,7 @@ module.exports = (app, SESSIONS) => {
             if (p.playedCard != null) {
               p.hand.push(p.playedCard);
               p.playedCard = null;
+              p.flippedOver = false;
             }
           });
         }

@@ -4,6 +4,7 @@ module.exports = class Player {
     this.seat = seat;
     this.hand = [];
     this.playedCard = null;
+    this.flippedOver = false;
     this.lastSeen = Date.now();
   }
 }
