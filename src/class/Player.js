@@ -6,5 +6,6 @@ module.exports = class Player {
     this.playedCard = null;
     this.flippedOver = false;
     this.lastSeen = Date.now();
+    this.ws = null;
   }
 }

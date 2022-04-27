@@ -3,7 +3,7 @@ const Player = require('./class/Player');
 const { hideCards } = require('./utils/utils');
 const { shuffle } = require('./utils/utils');
 
-const EXT_VERSION = '2';
+const EXT_VERSION = '3';
 
 module.exports = (app, SESSIONS) => {
   app.get('/', (req, res) => {
@@ -20,6 +20,7 @@ module.exports = (app, SESSIONS) => {
           player.hand.push(card);
         }
         res.send({ ...hideCards(session, req.query.playerid) });
+        sendSession(session, req.query.playerid);
       } else {
         res.sendStatus(404);
       }
@@ -42,7 +43,7 @@ module.exports = (app, SESSIONS) => {
         const session = new Session(id, b.owner, b.sanma, b.mode, b.length, b.forcedRotation, b.tenpaiRedraw);
         session.players.push(new Player(b.owner, 1));
         SESSIONS.push(session);
-        res.send(session);
+        res.send({ ...hideCards(session, req.query.playerid) });
       } catch(e) {
         console.log(e);
       }
@@ -77,13 +78,14 @@ module.exports = (app, SESSIONS) => {
         const playerid = req.query.playerid;
         
         // find session
-        let sess = SESSIONS.find(s => s.id == sessionid);
+        let session = SESSIONS.find(s => s.id == sessionid);
       
         // create player if there's space in the room
-        let maxPlayers = sess.sanma == 'true' ? 3 : 4;
-        if (sess.players.length < maxPlayers && !sess.players.some(p => p.nickname == playerid)) {
-          sess.players.push(new Player(playerid, sess.players.length + 1));
-          res.send(sess);
+        let maxPlayers = session.sanma == 'true' ? 3 : 4;
+        if (session.players.length < maxPlayers && !session.players.some(p => p.nickname == playerid)) {
+          session.players.push(new Player(playerid, session.players.length + 1));
+          res.send({ ...hideCards(session, req.query.playerid) });
+          sendSession(session, req.query.playerid);
         }
       } catch(e) {
         console.log(e);
@@ -102,7 +104,9 @@ module.exports = (app, SESSIONS) => {
         let card = player.hand.find(c => c.name == req.body.card);
         player.hand.splice(player.hand.indexOf(card), 1);
         player.playedCard = card;
+        player.flippedOver = false;
         res.send({ ...hideCards(session, req.query.playerid) });
+        sendSession(session, req.query.playerid);
       } else if (!session){
         res.sendStatus(404);
       }
@@ -122,6 +126,7 @@ module.exports = (app, SESSIONS) => {
           }
         }
         res.send({ ...hideCards(session, req.query.playerid) });
+        sendSession(session, req.query.playerid);
       } else {
         res.sendStatus(404);
       }
@@ -140,6 +145,7 @@ module.exports = (app, SESSIONS) => {
         session.deck.push(card);
         session.deck = shuffle(session.deck);
         res.send({ ...hideCards(session, req.query.playerid) });
+        sendSession(session, req.query.playerid);
       } else {
         res.sendStatus(404);
       }
@@ -160,9 +166,10 @@ module.exports = (app, SESSIONS) => {
         });
         if (player.nickname == session.owner && session.open && cardsPlayed == maxCards) {
           session.revealed = true;
-          session.open = false;
+          //session.open = false;
         }
         res.send({ ...hideCards(session, req.query.playerid) });
+        sendSession(session, req.query.playerid);
       } else {
         res.sendStatus(404);
       }
@@ -188,6 +195,7 @@ module.exports = (app, SESSIONS) => {
           });
         }
         res.send({ ...hideCards(session, req.query.playerid) });
+        sendSession(session, req.query.playerid);
       } else {
         res.sendStatus(404);
       }
@@ -210,11 +218,20 @@ module.exports = (app, SESSIONS) => {
           target.seat = seat;
         }
         res.send({ ...hideCards(session, req.query.playerid) });
+        sendSession(session, req.query.playerid);
       } else {
         res.sendStatus(404);
       }
     } catch(e) {
       console.log(e);
+    }
+  });
+}
+
+const sendSession = (session, playerid) => {
+  session.players.forEach(p => {
+    if (p.nickname != playerid) {
+      p.ws.send(JSON.stringify({ ...hideCards(session, p.nickname) }));
     }
   });
 }
