@@ -8,7 +8,10 @@ function shuffle(inputArray) {
 }
 
 function hideCards(session, playerid) {
-  let playerSession = JSON.parse(JSON.stringify(session));
+  let playerSession = JSON.parse(JSON.stringify(session, (key, value) => {
+    if (key == 'ws') return undefined;
+    else return value;
+  }));
   playerSession.players.forEach(p => {
     if (p.nickname != playerid) {
       p.hand = p.hand.map(() => {return {name: 'cardback'}});
@@ -20,7 +23,20 @@ function hideCards(session, playerid) {
   return playerSession;
 }
 
+function sendSession(session, playerid) {
+  try {
+    session.players.forEach(p => {
+      if (p.nickname != playerid) {
+        p.ws.send(JSON.stringify({ ...hideCards(session, p.nickname) }));
+      }
+    });
+  } catch(e) {
+    console.log(e);
+  }
+}
+
 module.exports = {
   shuffle,
-  hideCards
+  hideCards,
+  sendSession
 }

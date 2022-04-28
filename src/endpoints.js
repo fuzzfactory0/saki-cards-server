@@ -1,8 +1,6 @@
 const Session = require('./class/Session');
 const Player = require('./class/Player');
-const { hideCards } = require('./utils/utils');
-const { shuffle } = require('./utils/utils');
-
+const { hideCards, shuffle, sendSession } = require('./utils/utils');
 const EXT_VERSION = '3';
 
 module.exports = (app, SESSIONS) => {
@@ -46,6 +44,7 @@ module.exports = (app, SESSIONS) => {
         res.send({ ...hideCards(session, req.query.playerid) });
       } catch(e) {
         console.log(e);
+        res.sendStatus(500);
       }
     }
   });
@@ -56,7 +55,6 @@ module.exports = (app, SESSIONS) => {
       let session = SESSIONS.find(s => s.id == req.query.sessionid);
       if (session) {
         let player = session.players.find(p => p.nickname == req.query.playerid);
-        player.lastSeen = Date.now();
         res.send({ ...hideCards(session, req.query.playerid) });
       } else {
         res.sendStatus(404);
@@ -79,16 +77,20 @@ module.exports = (app, SESSIONS) => {
         
         // find session
         let session = SESSIONS.find(s => s.id == sessionid);
-      
-        // create player if there's space in the room
-        let maxPlayers = session.sanma == 'true' ? 3 : 4;
-        if (session.players.length < maxPlayers && !session.players.some(p => p.nickname == playerid)) {
-          session.players.push(new Player(playerid, session.players.length + 1));
-          res.send({ ...hideCards(session, req.query.playerid) });
-          sendSession(session, req.query.playerid);
-        }
+        if (session) {
+            // create player if there's space in the room
+          let maxPlayers = session.sanma == 'true' ? 3 : 4;
+          if (session.players.length < maxPlayers && !session.players.some(p => p.nickname == playerid)) {
+            session.players.push(new Player(playerid, session.players.length + 1));
+            res.send({ ...hideCards(session, req.query.playerid) });
+            sendSession(session, req.query.playerid);
+          }
+        } else {
+          res.sendStatus(404);
+        }        
       } catch(e) {
         console.log(e);
+        res.sendStatus(500);
       }
     }
   });
@@ -224,14 +226,6 @@ module.exports = (app, SESSIONS) => {
       }
     } catch(e) {
       console.log(e);
-    }
-  });
-}
-
-const sendSession = (session, playerid) => {
-  session.players.forEach(p => {
-    if (p.nickname != playerid) {
-      p.ws.send(JSON.stringify({ ...hideCards(session, p.nickname) }));
     }
   });
 }
