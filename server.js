@@ -48,18 +48,20 @@ wss.on("connection", (ws, req) => {
           let session = SESSIONS.find(s => s.id == params.get('sessionid'));
           if (session) {
             let player = session.players.find(p => p.nickname == params.get('playerid'));
+            console.log(player.nickname, 'left room', session.id);
 
             if (player.nickname == session.owner) {
               session.players.forEach(p => {
                 p.ws.close();
               });
-              SESSIONS = SESSIONS.filter(s => s.id != session.id);
+              SESSIONS.splice(SESSIONS.indexOf(session), 1);
+              console.log('Room', session.id, 'deleted');
             } else {
               player.hand.forEach(card => {
                 session.deck.push(card);
               });
               session.deck = shuffle(session.deck);
-              session.players = session.players.filter(p => p.nickname != player.nickname);
+              session.players.splice(session.players.indexOf(player), 1);
               session.players.forEach(p => {
                 sendSession(session, p.nickname);
               });
@@ -81,20 +83,3 @@ wss.on("connection", (ws, req) => {
 });
 
 console.log(`WSS listening on port ${WSS_PORT}`);
-
-// remove inactive players, empty rooms and rooms where the owner left
-/*
-setInterval(() => {
-  SESSIONS.forEach((session) => {
-    session.players.forEach((player) => {
-      if (Date.now() - player.lastSeen > 600000) {
-        session.players = session.players.filter(p => p.nickname != player.nickname);
-        player.ws.close(408);
-      } 
-    });
-    if (session.players.length == 0 || !session.players.some(p => p.nickname == session.owner)) {
-      SESSIONS = SESSIONS.filter(s => s.id != session.id);
-    }
-  })
-}, 60000);
-*/

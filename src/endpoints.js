@@ -42,6 +42,7 @@ module.exports = (app, SESSIONS) => {
         session.players.push(new Player(b.owner, 1));
         SESSIONS.push(session);
         res.send({ ...hideCards(session, req.query.playerid) });
+        console.log(session.owner, 'created room', session.id);
       } catch(e) {
         console.log(e);
         res.sendStatus(500);
@@ -70,7 +71,6 @@ module.exports = (app, SESSIONS) => {
       res.send({alert: 'VERSION_MISMATCH'});
     } else {
       try {
-        console.log('join request ', req.url)
         // parse session and player from url
         const sessionid = req.query.sessionid;
         const playerid = req.query.playerid;
@@ -84,6 +84,7 @@ module.exports = (app, SESSIONS) => {
             session.players.push(new Player(playerid, session.players.length + 1));
             res.send({ ...hideCards(session, req.query.playerid) });
             sendSession(session, req.query.playerid);
+            console.log(playerid, 'joined room', sessionid);
           }
         } else {
           res.sendStatus(404);
