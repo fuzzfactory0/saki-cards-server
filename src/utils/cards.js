@@ -1,6 +1,6 @@
 module.exports = [
   {
-    name: "Aishlin Wishhart",
+    name: "Aislinn Wishhart",
   },
   {
     name: "Amae Koromo",
@@ -18,7 +18,7 @@ module.exports = [
     name: "Atarashi Ako",
   },
   {
-    name: "Chloe Myeonghwa",
+    name: "Choe Myeonghwa",
   },
   {
     name: "Ezaki Hitomi",
@@ -120,7 +120,7 @@ module.exports = [
     name: "Sagimori Arata",
   },
   {
-    name: "Tawamura Tomoki",
+    name: "Sawamura Tomoki",
   },
   {
     name: "Senoo Kaori",
