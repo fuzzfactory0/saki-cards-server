@@ -1,6 +1,6 @@
 module.exports = [
   {
-    name: "Aislinn Wishhart",
+    name: "Aislinn Wishart",
   },
   {
     name: "Amae Koromo",
