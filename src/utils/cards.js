@@ -1,161 +1,164 @@
 module.exports = [
   {
-    name: "Aislinn Wishart",
+    name: "Aislinn_Wishart",
   },
   {
-    name: "Amae Koromo",
+    name: "Amae_Koromo",
   },
   {
-    name: "Anetai Toyone",
+    name: "Anetai_Toyone",
   },
   {
-    name: "Arakawa Kei",
+    name: "Arakawa_Kei",
   },
   {
-    name: "Atago Hiroe",
+    name: "Atago_Hiroe",
   },
   {
-    name: "Atarashi Ako",
+    name: "Atarashi_Ako",
   },
   {
-    name: "Choe Myeonghwa",
+    name: "Choe_Myeonghwa",
   },
   {
-    name: "Ezaki Hitomi",
+    name: "Ezaki_Hitomi",
   },
   {
-    name: "Fukuji Mihoko",
+    name: "Fukuji_Mihoko",
   },
   {
-    name: "Hanada Kirame",
+    name: "Hanada_Kirame",
   },
   {
-    name: "Hao Huiyu",
+    name: "Hao_Huiyu",
   },
   {
-    name: "Haramura Nodoka",
+    name: "Haramura_Nodoka",
   },
   {
-    name: "Hirose Sumire",
+    name: "Hirose_Sumire",
   },
   {
-    name: "Ikeda Kana",
+    name: "Ikeda_Kana",
   },
   {
-    name: "Inoue Jun",
+    name: "Inoue_Jun",
   },
   {
-    name: "Iwato Kasumi",
+    name: "Iwato_Kasumi",
   },
   {
-    name: "Jindai Komaki",
+    name: "Jindai_Komaki",
   },
   {
-    name: "Kainou Yoshiko",
+    name: "Kainou_Yoshiko",
   },
   {
-    name: "Kajiki Yumi",
+    name: "Kajiki_Yumi",
   },
   {
-    name: "Kakura Kurumi",
+    name: "Kakura_Kurumi",
   },
   {
-    name: "Kanbara Satomi",
+    name: "Kanbara_Satomi",
   },
   {
-    name: "Karijuku Tomoe",
+    name: "Karijuku_Tomoe",
   },
   {
-    name: "Kataoka Yuuki",
+    name: "Kataoka_Yuuki",
   },
   {
-    name: "Kosegawa Shiromi",
+    name: "Kosegawa_Shiromi",
   },
   {
-    name: "Kunihiro Hajime",
+    name: "Kunihiro_Hajime",
   },
   {
-    name: "Shirouzu Mairu",
+    name: "Shirouzu_Mairu",
   },
   {
-    name: "Mase Yuuko",
+    name: "Mase_Yuuko",
   },
   {
-    name: "Matano Seiko",
+    name: "Matano_Seiko",
   },
   {
-    name: "Matsumi Kuro",
+    name: "Matsumi_Kuro",
   },
   {
-    name: "Matsumi Yuu",
+    name: "Matsumi_Yuu",
   },
   {
-    name: "Maya Yukiko",
+    name: "Maya_Yukiko",
   },
   {
-    name: "Megan Davin",
+    name: "Megan_Davin",
   },
   {
-    name: "Miyanaga Saki",
+    name: "Miyanaga_Saki",
   },
   {
-    name: "Miyanaga Teru",
+    name: "Miyanaga_Teru",
   },
   {
-    name: "Nanpo Kazue",
+    name: "Nanpo_Kazue",
   },
   {
-    name: "Nelly Virsaladze",
+    name: "Nelly_Virsaladze",
   },
   {
-    name: "Onjouji Toki",
+    name: "Onjouji_Toki",
   },
   {
-    name: "Oohoshi Awai",
+    name: "Oohoshi_Awai",
   },
   {
-    name: "Ryuumonbuchi Touka",
+    name: "Ryuumonbuchi_Touka",
   },
   {
-    name: "Sagimori Arata",
+    name: "Sagimori_Arata",
   },
   {
-    name: "Sawamura Tomoki",
+    name: "Sawamura_Tomoki",
   },
   {
-    name: "Senoo Kaori",
+    name: "Senoo_Kaori",
   },
   {
-    name: "Shibuya Takami",
+    name: "Shibuya_Takami",
   },
   {
-    name: "Shimizudani Ryuuka",
+    name: "Shimizudani_Ryuuka",
   },
   {
-    name: "Someya Mako",
+    name: "Someya_Mako",
   },
   {
-    name: "Takakamo Shizuno",
+    name: "Takakamo_Shizuno",
   },
   {
-    name: "Takei Hisa",
+    name: "Takei_Hisa",
   },
   {
-    name: "Takimi Haru",
+    name: "Takimi_Haru",
   },
   {
-    name: "Toyouko Momoko",
+    name: "Toyouko_Momoko",
   },
   {
-    name: "Tsujigaito Satoha",
+    name: "Tsujigaito_Satoha",
   },
   {
-    name: "Usuzawa Sae",
+    name: "Usuzawa_Sae",
   },
   {
-    name: "Usuzumi Hatsumi",
+    name: "Usuzumi_Hatsumi",
   },
   {
-    name: "Yumeno Maho",
+    name: "Ueshige_Suzu",
+  },
+  {
+    name: "Yumeno_Maho",
   }
 ]
