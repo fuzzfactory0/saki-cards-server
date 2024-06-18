@@ -27,16 +27,14 @@ wss.on("connection", (ws, req) => {
   try {
     const params = new URL(req.url, `http://${req.headers.host}`).searchParams;
     let session = SESSIONS.find(s => s.id == params.get('sessionid'));
-    if (session) {
-      let player = session.players.find(p => p.nickname == params.get('playerid'));
-    
+    if (session) {    
       ws.on("message", (str) => {
         try {
           const data = JSON.parse(str);
           let session = SESSIONS.find(s => s.id == data.sessionid);
           if (session) {
             let player = session.players.find(p => p.nickname == data.playerid);
-            player.lastSeen = Date.now();
+            if (player) player.lastSeen = Date.now();
           }
         } catch(e) {
           console.log(e);
@@ -72,7 +70,12 @@ wss.on("connection", (ws, req) => {
         }
       });
 
-      player.ws = ws;
+      let player = session.players.find(p => p.nickname == params.get('playerid'));
+      if (player) player.ws = ws;
+      else {
+        let spectator = session.spectators.find(p => p.nickname == params.get('playerid'));
+        if (spectator) spectator.ws = ws;
+      }
     } else {
       ws.close();
       return;

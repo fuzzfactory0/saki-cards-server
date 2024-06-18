@@ -160,5 +160,41 @@ module.exports = [
   },
   {
     name: "Yumeno_Maho",
-  }
+  },
+  {
+    name: "Ataga_Kinue",
+    isBeta: true
+  },
+  {
+    name: "Funakubo_Hiroko",
+    isBeta: true
+  },
+  {
+    name: "Iwadate_Yuan",
+    isBeta: true
+  },
+  {
+    name: "Motouchi_Naruka",
+    isBeta: true
+  },
+  {
+    name: "Shishihara_Sawaya",
+    isBeta: true
+  },
+  {
+    name: "Suehara_Kyouko",
+    isBeta: true
+  },
+  {
+    name: "Ueshige_Suzu",
+    isBeta: true
+  },
+  {
+    name: "Yae_Kobashiri",
+    isBeta: true
+  },
+  {
+    name: "Yoshitome_Miharu",
+    isBeta: true
+  },
 ]

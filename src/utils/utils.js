@@ -12,12 +12,15 @@ function hideCards(session, playerid) {
     if (key == 'ws') return undefined;
     else return value;
   }));
-  playerSession.players.forEach(p => {
-    if (p.nickname != playerid) {
-      p.hand = p.hand.map(() => {return {name: 'cardback'}});
-    }
-    p.lastSeen = 0;
-  });
+  var isSpectator = playerSession.spectators.some(p => p.nickname == playerid);
+  if (!isSpectator) {
+    playerSession.players.forEach(p => {
+      if (p.nickname != playerid) {
+        p.hand = p.hand.map(() => {return {name: 'cardback'}});
+      }
+      p.lastSeen = 0;
+    });
+  }
   playerSession.deck = playerSession.deck.map(() => {return {name: 'cardback'}});
   playerSession.you = playerid;
   return playerSession;
@@ -28,6 +31,11 @@ function sendSession(session, playerid) {
     session.players.forEach(p => {
       if (p.nickname != playerid) {
         p.ws.send(JSON.stringify({ ...hideCards(session, p.nickname) }));
+      }
+    });
+    session.spectators.forEach(p => {
+      if (p.nickname != playerid) {
+        p.ws.send(JSON.stringify({ ...hideCards(session, p.nickname), spectatorMode: true }));
       }
     });
   } catch(e) {

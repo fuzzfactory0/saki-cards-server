@@ -1,7 +1,7 @@
 const Session = require('./class/Session');
 const Player = require('./class/Player');
 const { hideCards, shuffle, sendSession } = require('./utils/utils');
-const EXT_VERSION = '3';
+const EXT_VERSION = '4';
 
 module.exports = (app, SESSIONS) => {
   app.get('/', (req, res) => {
@@ -38,7 +38,7 @@ module.exports = (app, SESSIONS) => {
         do { 
           id = Math.floor(Math.random() * 10000);
         } while (SESSIONS.some(s => s.id == id) || id < 1000);
-        const session = new Session(id, b.owner, b.sanma, b.mode, b.length, b.forcedRotation, b.tenpaiRedraw);
+        const session = new Session(id, b.owner, b.sanma, b.mode, b.length, b.forcedRotation, b.tenpaiRedraw, b.betaSession);
         session.players.push(new Player(b.owner, 1));
         SESSIONS.push(session);
         res.send({ ...hideCards(session, req.query.playerid) });
@@ -85,6 +85,12 @@ module.exports = (app, SESSIONS) => {
             res.send({ ...hideCards(session, req.query.playerid) });
             sendSession(session, req.query.playerid);
             console.log(playerid, 'joined room', sessionid);
+          } else {
+            // add spectator if no more players fit in the room
+            session.spectators.push(new Player(playerid, 1, true));
+            res.send({ ...hideCards(session, req.query.playerid), spectatorMode: true });
+            sendSession(session, req.query.playerid);
+            console.log(playerid, 'joined room', sessionid, 'as spectator');
           }
         } else {
           res.sendStatus(404);
@@ -157,6 +163,33 @@ module.exports = (app, SESSIONS) => {
     }
   });
 
+  app.post('/returnAll', (req, res) => {
+    try {
+      let session = SESSIONS.find(s => s.id == req.query.sessionid);
+      if (session) {
+        let player = session.players.find(p => p.nickname == req.query.playerid);
+        if (player.nickname == session.owner) {
+          session.open = true;
+          session.revealed = false;
+          session.players.forEach(p => {
+            if (p.playedCard != null) {
+              p.playedCard = null;
+              p.flippedOver = false;
+            }
+            player.hand = [];
+          });
+          session.deck = shuffle(session.fullDeck);
+        }
+        res.send({ ...hideCards(session, req.query.playerid) });
+        sendSession(session, req.query.playerid);
+      } else {
+        res.sendStatus(404);
+      }
+    } catch(e) {
+      console.log(e);
+    }
+  });
+
   app.post('/reveal', (req, res) => {
     try {
       let session = SESSIONS.find(s => s.id == req.query.sessionid);
@@ -200,6 +233,36 @@ module.exports = (app, SESSIONS) => {
         res.send({ ...hideCards(session, req.query.playerid) });
         sendSession(session, req.query.playerid);
       } else {
+        res.sendStatus(404);
+      }
+    } catch(e) {
+      console.log(e);
+    }
+  });
+
+  app.post('/spectateSeat' , (req, res) => {
+    try {
+      let session = SESSIONS.find(s => s.id == req.query.sessionid);
+      if (session && session.open) {
+        let spectator = session.spectators.find(p => p.nickname == req.query.playerid);
+        switch (req.query.direction) {
+          case 'left':
+            spectator.seat -= 1;
+            if (spectator.seat == 0) {
+              spectator.seat = session.sanma ? 3 : 4;
+            }
+          break;
+          case 'right':
+            spectator.seat += 1;
+            let maxSeat = session.sanma ? 3 : 4;
+            if (spectator.seat > maxSeat) {
+              spectator.seat = 1;
+            }
+          break;
+        }
+        res.send({ ...hideCards(session, req.query.playerid) });
+        sendSession(session, req.query.playerid);
+      } else if (!session){
         res.sendStatus(404);
       }
     } catch(e) {
