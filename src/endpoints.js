@@ -176,7 +176,7 @@ module.exports = (app, SESSIONS) => {
               p.playedCard = null;
               p.flippedOver = false;
             }
-            player.hand = [];
+            p.hand = [];
           });
           session.deck = shuffle(session.fullDeck);
         }

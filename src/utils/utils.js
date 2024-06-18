@@ -16,12 +16,15 @@ function hideCards(session, playerid) {
   if (!isSpectator) {
     playerSession.players.forEach(p => {
       if (p.nickname != playerid) {
-        p.hand = p.hand.map(() => {return {name: 'cardback'}});
+        p.hand = p.hand.map(() => {return {name: 'cardback', isBeta: false}});
+        if (p.playedCard) {
+          p.playedCard = playerSession.revealed ? p.playedCard : {name: 'cardback', isBeta: false};
+        }
       }
       p.lastSeen = 0;
     });
   }
-  playerSession.deck = playerSession.deck.map(() => {return {name: 'cardback'}});
+  playerSession.deck = playerSession.deck.map(() => {return {name: 'cardback', isBeta: false}});
   playerSession.you = playerid;
   return playerSession;
 }

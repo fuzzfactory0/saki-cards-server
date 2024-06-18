@@ -1,4 +1,5 @@
 const CARDS = require('../utils/cards')
+const CARDS_BETA = require('../utils/cards_beta')
 const { shuffle } = require('../utils/utils');
 
 module.exports = class Session {
@@ -16,8 +17,7 @@ module.exports = class Session {
     this.spectators = [];
     this.open = true;
     this.revealed = false;
-    // if is beta, get all beta cards and exclude old ones with same names, else get all non beta cards
-    this.deck = betaSession ? shuffle(CARDS).filter(c => !CARDS.some(c2 => c.name == c2.name && !c.isBeta && c2.isBeta)) : shuffle(CARDS.filter(c => !c.isBeta));
+    this.deck = betaSession ? shuffle(CARDS_BETA) : shuffle(CARDS);
     this.fullDeck = this.deck;
   }
 }

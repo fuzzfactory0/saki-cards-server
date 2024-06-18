@@ -4,8 +4,8 @@ const cors = require('cors');
 const ws = require('ws');
 const { sendSession, shuffle } = require('./src/utils/utils');
 
-const API_PORT = process.env.API_PORT;
-const WSS_PORT = process.env.WSS_PORT;
+const API_PORT = 3000// process.env.API_PORT;
+const WSS_PORT = 3001//process.env.WSS_PORT;
 
 
 const app = express();
@@ -71,8 +71,9 @@ wss.on("connection", (ws, req) => {
       });
 
       let player = session.players.find(p => p.nickname == params.get('playerid'));
-      if (player) player.ws = ws;
-      else {
+      if (player) {
+        player.ws = ws;
+      } else {
         let spectator = session.spectators.find(p => p.nickname == params.get('playerid'));
         if (spectator) spectator.ws = ws;
       }
